@@ -1,26 +1,52 @@
-name: Build Bluesky
+name: Playwright Tests
 
+# Automate Github actions
 on:
+  # Remote push request to 'main' repo, run below job
   push:
     branches: [ main ]
+  
+  # Remote pull request to 'main' repo, run below job
   pull_request:
     branches: [ main ]
 
+  # Manual github actions calls, run below job
+  workflow_dispatch:
+
+# Automated job definition
 jobs:
-  build:
+  # Test UI functionality
+  test_ui_functionality:
+    # After 1hr stop job if not completed
+    timeout-minutes: 60
+
+    # Run on github's linux environment
     runs-on: ubuntu-latest
 
+    # Steps definition
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set Up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Project
-        run: npm run build
+      # using the github action built-in cmds, checkout the repo
+    - uses: actions/checkout@v4
+      # setup node.js package
+    - uses: actions/setup-node@v4
+      # specify which node version (i.e. the latest version)
+      with:
+        node-version: lts/*
+      # Install any node dependencies needed
+    - name: Install dependencies
+      run: npm ci
+      # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      # Run the playwright test scripts wuth tag name UI
+    - name: Run Playwright tests
+      # Specify which directory to run the tests from
+      working-directory: ./__tests__/lib
+      run: xvfb-run npx playwright test
+      # Upload the test scripts reports to the following directory, if the job was not cancelled. Keep report for 30 days
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report-ui
+        path: playwright-report/
+        retention-days: 30
