@@ -18,6 +18,7 @@ import {
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native'
+import {useQueryClient} from '@tanstack/react-query'
 
 import {APP_LANGUAGES, LANGUAGES} from '#/lib/../locale/languages'
 import {createHitslop, HITSLOP_20} from '#/lib/constants'
@@ -42,7 +43,10 @@ import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {useActorAutocompleteQuery} from '#/state/queries/actor-autocomplete'
 import {useActorSearch} from '#/state/queries/actor-search'
 import {usePopularFeedsSearch} from '#/state/queries/feed'
-import {useProfilesQuery} from '#/state/queries/profile'
+import {
+  unstableCacheProfileView,
+  useProfilesQuery,
+} from '#/state/queries/profile'
 import {useSearchPostsQuery} from '#/state/queries/search-posts'
 import {useSession} from '#/state/session'
 import {useSetMinimalShellMode} from '#/state/shell'
@@ -76,6 +80,7 @@ import {Earth_Stroke2_Corner0_Rounded as EarthIcon} from '#/components/icons/Glo
 import * as Layout from '#/components/Layout'
 import * as Menu from '#/components/Menu'
 import {account, useStorage} from '#/storage'
+import * as bsky from '#/types/bsky'
 
 function Loader() {
   return (
@@ -389,10 +394,7 @@ function SearchLanguageDropdown({
           </Button>
         )}
       </Menu.Trigger>
-      <Menu.Outer
-        // HACKFIX: Currently there is no height limit for Radix dropdowns,
-        // so if it's too tall it just goes off screen. TODO: fix internally -sfn
-        style={web({maxHeight: '70vh'})}>
+      <Menu.Outer>
         <Menu.LabelText>
           <Trans>Filter search by language</Trans>
         </Menu.LabelText>
@@ -621,6 +623,7 @@ export function SearchScreenShell({
   const {_} = useLingui()
   const setMinimalShellMode = useSetMinimalShellMode()
   const {currentAccount} = useSession()
+  const queryClient = useQueryClient()
 
   // Query terms
   const [searchText, setSearchText] = React.useState<string>(queryParam)
@@ -656,7 +659,7 @@ export function SearchScreenShell({
   )
 
   const updateProfileHistory = useCallback(
-    async (item: AppBskyActorDefs.ProfileViewBasic) => {
+    async (item: bsky.profile.AnyProfileView) => {
       const newAccountHistory = [
         item.did,
         ...accountHistory.filter(p => p !== item.did),
@@ -673,7 +676,7 @@ export function SearchScreenShell({
     [termHistory, setTermHistory],
   )
   const deleteProfileHistoryItem = useCallback(
-    async (item: AppBskyActorDefs.ProfileViewBasic) => {
+    async (item: AppBskyActorDefs.ProfileViewDetailed) => {
       setAccountHistory(accountHistory.filter(p => p !== item.did))
     },
     [accountHistory, setAccountHistory],
@@ -766,13 +769,14 @@ export function SearchScreenShell({
   )
 
   const handleProfileClick = React.useCallback(
-    (profile: AppBskyActorDefs.ProfileViewBasic) => {
+    (profile: bsky.profile.AnyProfileView) => {
+      unstableCacheProfileView(queryClient, profile)
       // Slight delay to avoid updating during push nav animation.
       setTimeout(() => {
         updateProfileHistory(profile)
       }, 400)
     },
-    [updateProfileHistory],
+    [updateProfileHistory, queryClient],
   )
 
   const onSoftReset = React.useCallback(() => {
@@ -1013,11 +1017,11 @@ function SearchHistory({
   onRemoveProfileClick,
 }: {
   searchHistory: string[]
-  selectedProfiles: AppBskyActorDefs.ProfileViewBasic[]
+  selectedProfiles: AppBskyActorDefs.ProfileViewDetailed[]
   onItemClick: (item: string) => void
-  onProfileClick: (profile: AppBskyActorDefs.ProfileViewBasic) => void
+  onProfileClick: (profile: AppBskyActorDefs.ProfileViewDetailed) => void
   onRemoveItemClick: (item: string) => void
-  onRemoveProfileClick: (profile: AppBskyActorDefs.ProfileViewBasic) => void
+  onRemoveProfileClick: (profile: AppBskyActorDefs.ProfileViewDetailed) => void
 }) {
   const {isMobile} = useWebMediaQueries()
   const pal = usePalette('default')
