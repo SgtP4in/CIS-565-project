@@ -32,8 +32,8 @@ jobs:
 
     # install yarn
     - name: Install Yarn Dependencies
-      run: yarn
+    - run: yarn
 
     - name: Build BlueSky App
-      run: yarn web
+    - run: yarn web
       
