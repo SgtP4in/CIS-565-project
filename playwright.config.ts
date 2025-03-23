@@ -22,7 +22,10 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['html'], // Default HTML reporter
+    ['allure-playwright'], // Allure reporter
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -55,8 +58,8 @@ export default defineConfig({
       use: { ...devices['Pixel 7'] },
     },
     {
-    name: 'Mobile Safari',
-    use: { ...devices['iPhone 15'] },
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 15'] },
     },
 
     /* Test against branded browsers. */
