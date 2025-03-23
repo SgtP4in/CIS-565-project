@@ -1,0 +1,39 @@
+name: Build BlueSky Application
+
+# Automate Github actions
+on:
+  # Remote push request to 'main' repo, run below job
+  push:
+    branches: [ search-and-post-tests ]
+
+  # Manual github actions calls, run below job
+  workflow_dispatch:
+
+jobs:
+  # Build job
+  build:
+    # After 1hr stop job if not completed
+    timeout-minutes: 60
+
+    # Run on github's linux environment
+    runs-on: ubuntu-latest
+
+    # Steps definition
+    steps:
+      # using the github action built-in cmds, checkout the repo
+    - name: Checkout Code
+    - uses: actions/checkout@v4
+      # setup node.js package
+    - name: Setup Node.js Package
+    - uses: actions/setup-node@v4
+      # specify which node version (i.e. the latest version)
+      with:
+        node-version: lts/*
+
+    # install yarn
+    - name: Install Yarn Dependencies
+      run: yarn
+
+    - name: Build BlueSky App
+      run: yarn web
+      
