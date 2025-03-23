@@ -28,11 +28,20 @@ jobs:
       - name: Verify Playwright Browsers
         run: npx playwright install
 
-      - name: Install Allure
+      - name: Install Allure CLI
         run: |
+          # Download and install Allure CLI
           sudo apt-get update
-          sudo apt-get install -y allure
-          npm install -D allure-playwright
+          sudo apt-get install -y default-jre
+          export ALLURE_VERSION=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+          wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz
+          tar -xvzf allure-${ALLURE_VERSION}.tgz
+          sudo mv allure-${ALLURE_VERSION} /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          allure --version
+
+      - name: Install Allure Playwright Reporter
+        run: npm install -D allure-playwright
 
       - name: Run Playwright tests
         run: xvfb-run npx playwright test --grep @login --reporter=line,allure-playwright
@@ -72,11 +81,20 @@ jobs:
       - name: Verify Playwright Browsers
         run: npx playwright install
 
-      - name: Install Allure
+      - name: Install Allure CLI
         run: |
+          # Download and install Allure CLI
           sudo apt-get update
-          sudo apt-get install -y allure
-          npm install -D allure-playwright
+          sudo apt-get install -y default-jre
+          export ALLURE_VERSION=$(curl -s https://api.github.com/repos/allure-framework/allure2/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+          wget https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz
+          tar -xvzf allure-${ALLURE_VERSION}.tgz
+          sudo mv allure-${ALLURE_VERSION} /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          allure --version
+
+      - name: Install Allure Playwright Reporter
+        run: npm install -D allure-playwright
 
       - name: Run Playwright tests
         run: xvfb-run npx playwright test --grep @search --reporter=line,allure-playwright
