@@ -2,10 +2,8 @@ import { test, expect, type Page } from '@playwright/test';
 
 const BLUESKY_WEB_URL = 'https://bsky.app';
 
-//const BSKY_EMAIL = process.env.CIS565_EMAIL;
-//const BSKY_PASS = process.env.CIS565_PASSWORD;
-const BSKY_EMAIL = "cis565bskytests@gmail.com";
-const BSKY_PASS = "CIS565TestGroup"; 
+const BSKY_EMAIL = process.env.CIS565_EMAIL;
+const BSKY_PASS = process.env.CIS565_PASSWORD;
 
 // Specify search term
 const searchTerm = 'nba';
