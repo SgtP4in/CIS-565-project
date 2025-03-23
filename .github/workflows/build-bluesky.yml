@@ -22,18 +22,18 @@ jobs:
     steps:
       # using the github action built-in cmds, checkout the repo
     - name: Checkout Code
-    - uses: actions/checkout@v4
+      uses: actions/checkout@v4
       # setup node.js package
     - name: Setup Node.js Package
-    - uses: actions/setup-node@v4
+      uses: actions/setup-node@v4
       # specify which node version (i.e. the latest version)
       with:
         node-version: lts/*
 
     # install yarn
     - name: Install Yarn Dependencies
-    - run: yarn
+      run: yarn
 
     - name: Build BlueSky App
-    - run: yarn web
+      run: yarn web
       
