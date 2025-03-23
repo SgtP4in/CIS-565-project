@@ -1,8 +1,8 @@
-name: Playwright Systems Tests
+name: Playwright Systems Tests (V.2)
 
 # Automate Github actions
 on:
-# Remote push request to 'main' repo, run below job
+  # Remote push request to 'main' repo, run below job
   push:
     branches: [ main ]
 
@@ -24,30 +24,46 @@ jobs:
       # Using the github action built-in cmds, checkout the repo
     - name: Checkout Code
       uses: actions/checkout@v4
+
       # Setup node.js package
     - name: Setup Node.js Package
       uses: actions/setup-node@v4
       # Specify which node version (i.e. the latest version)
       with:
         node-version: lts/*
+
       # Install any node dependencies needed
     - name: Install dependencies
       run: npm ci
+
       # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-      # Run the playwright test scripts
+
+      # Install Allure command-line tool and Allure Playwright reporter
+    - name: Install Allure
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y allure
+        npm install -D @playwright/test allure-playwright
+
+      # Run the playwright test scripts with Allure reporter
     - name: Run Playwright tests
-      run: xvfb-run npx playwright test --grep @login
+      run: xvfb-run npx playwright test --grep @login --reporter=line,allure-playwright
       env:
         CIS565_EMAIL: ${{ secrets.CIS565_EMAIL}}
         CIS565_PASSWORD: ${{ secrets.CIS565_EMAIL}}
-      # Upload the test scripts reports to the following directory, if the job was not cancelled. Keep report for 30 days
+
+      # Generate Allure report
+    - name: Generate Allure report
+      run: allure generate allure-results --clean -o allure-report
+
+      # Upload the Allure report as an artifact
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-login-ui-report
-        path: playwright-report/
+        name: allure-login-ui-report
+        path: allure-report/
         retention-days: 30
 
   # Test Search UI functionality
@@ -63,25 +79,41 @@ jobs:
       # Using the github action built-in cmds, checkout the repo
     - name: Checkout Code
       uses: actions/checkout@v4
+
       # Setup node.js package
     - name: Setup Node.js Package
       uses: actions/setup-node@v4
       # Specify which node version (i.e. the latest version)
       with:
         node-version: lts/*
+
       # Install any node dependencies needed
     - name: Install dependencies
       run: npm ci
+
       # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-      # Run the playwright test scripts
+
+      # Install Allure command-line tool and Allure Playwright reporter
+    - name: Install Allure
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y allure
+        npm install -D @playwright/test allure-playwright
+
+      # Run the playwright test scripts with Allure reporter
     - name: Run Playwright tests
-      run: xvfb-run npx playwright test --grep @search
-      # Upload the test scripts reports to the following directory, if the job was not cancelled. Keep report for 30 days
+      run: xvfb-run npx playwright test --grep @search --reporter=line,allure-playwright
+
+      # Generate Allure report
+    - name: Generate Allure report
+      run: allure generate allure-results --clean -o allure-report
+
+      # Upload the Allure report as an artifact
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-search-ui-report
-        path: playwright-report/
+        name: allure-search-ui-report
+        path: allure-report/
         retention-days: 30
