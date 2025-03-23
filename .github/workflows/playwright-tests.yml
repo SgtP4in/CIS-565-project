@@ -32,7 +32,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y allure
-          npm install -D @playwright/test allure-playwright
+          npm install -D allure-playwright
 
       - name: Run Playwright tests
         run: xvfb-run npx playwright test --grep @login --reporter=line,allure-playwright
@@ -76,7 +76,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y allure
-          npm install -D @playwright/test allure-playwright
+          npm install -D allure-playwright
 
       - name: Run Playwright tests
         run: xvfb-run npx playwright test --grep @search --reporter=line,allure-playwright
