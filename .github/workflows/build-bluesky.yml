@@ -35,5 +35,5 @@ jobs:
       run: yarn
 
     - name: Build BlueSky App
-      run: yarn run
+      run: yarn web
       
