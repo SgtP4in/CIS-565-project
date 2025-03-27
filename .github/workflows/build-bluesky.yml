@@ -1,4 +1,4 @@
-name: Build BlueSky Application
+name: Build BlueSky 
 
 # Automate Github actions
 on:
