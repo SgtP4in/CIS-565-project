@@ -4,8 +4,7 @@
   "description": "1. Unit tests\r 2. Integration tests\r 3. System tests\r 4. Acceptance tests",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --config webpack.config.js --watch --progress",
-    "start": "webpack-dev-server --config webpack.config.js"
+    "web": "expo start --web"
   },
   "keywords": [],
   "author": "",
