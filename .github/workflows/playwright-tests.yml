@@ -73,14 +73,14 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Install dependencies
+      - name: Install project dependencies with yarn
         run: yarn install
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: Verify Playwright Browsers
-        run: npx playwright install
+      - name: Install Playwright and browsers
+        run: |
+          npm install -D @playwright/test
+          npx playwright install --with-deps
+          npx playwright install chromium
 
       - name: Install Allure CLI
         run: |
@@ -133,14 +133,14 @@ jobs:
         with:
           node-version: lts/*
 
-      - name: Install dependencies
+      - name: Install project dependencies with yarn
         run: yarn install
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: Verify Playwright Browsers
-        run: npx playwright install
+      - name: Install Playwright and browsers
+        run: |
+          npm install -D @playwright/test
+          npx playwright install --with-deps
+          npx playwright install chromium
 
       - name: Install Allure CLI
         run: |
