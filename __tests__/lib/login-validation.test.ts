@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const BLUESKY_WEB_URL = "http://localhost:2583";
+const BLUESKY_WEB_URL = "http://localhost:19006";
 const BSKY_EMAIL = process.env.CIS565_EMAIL; // reference secret in GitHub
 const BSKY_PASS = process.env.CIS565_PASSWORD; // reference secret in GitHub
 
