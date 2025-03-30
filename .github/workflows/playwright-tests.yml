@@ -1,4 +1,4 @@
-name: Playwright Systems Tests (V2.1)
+name: Playwright Systems Tests (V2.2)
 
 on:
   push:
@@ -6,7 +6,61 @@ on:
   workflow_dispatch:
 
 jobs:
+  setup-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre pkg-config libssl-dev
+          
+      - name: Install Docker
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          
+      - name: Start Docker
+        run: sudo service docker start
+          
+      - name: Install pnpm
+        run: npm install -g pnpm
+          
+      - name: Clone and setup atproto
+        run: |
+          git clone https://github.com/bluesky-social/atproto.git
+          cd atproto
+          pnpm i
+          pnpm build
+          
+      - name: Start PostgreSQL
+        run: |
+          sudo docker run -d --name postgres \
+            -e POSTGRES_PASSWORD=postgres \
+            -e POSTGRES_USER=postgres \
+            -p 5432:5432 \
+            postgres:13-alpine
+          sleep 10 # Wait for DB to start
+          
+      - name: Start backend services
+        working-directory: ./atproto/packages/dev-env
+        run: pnpm start &
+        env:
+          DID_PLC_URL: http://localhost:2582
+          ATP_CASSANDRA_URL: localhost:9042
+          ATP_ELASTICSEARCH_URL: http://localhost:9200
+          ATP_POSTGRES_URL: postgres://postgres:postgres@localhost:5432/postgres
+
   run-login-system-tests:
+    needs: setup-backend
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
@@ -20,7 +74,7 @@ jobs:
           node-version: lts/*
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -47,6 +101,7 @@ jobs:
         env:
           CIS565_EMAIL: ${{ secrets.CIS565_EMAIL}}
           CIS565_PASSWORD: ${{ secrets.CIS565_EMAIL}}
+          ATP_API_URL: http://localhost:2583
 
       - name: Debug Allure Results
         run: ls -la allure-results
@@ -65,6 +120,7 @@ jobs:
           retention-days: 30
 
   run-search-system-tests:
+    needs: setup-backend
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
@@ -78,7 +134,7 @@ jobs:
           node-version: lts/*
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
@@ -102,6 +158,8 @@ jobs:
 
       - name: Run Playwright tests
         run: xvfb-run npx playwright test --grep @search --reporter=line,allure-playwright
+        env:
+          ATP_API_URL: http://localhost:2583
 
       - name: Debug Allure Results
         run: ls -la allure-results
