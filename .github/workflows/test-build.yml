@@ -21,7 +21,4 @@ jobs:
           node-version: lts/*
           
       - name: Install Yarn Dependencies
-        run: yarn
-
-      - name: Build BlueSky Web
-        run: yarn web
+        run: yarn && yarn web
