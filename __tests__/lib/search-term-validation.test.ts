@@ -1,13 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const BLUESKY_WEB_URL = 'https://bsky.app';
+const BLUESKY_WEB_URL = 'http://localhost:2583';
 
 const BSKY_EMAIL = process.env.CIS565_EMAIL;
 const BSKY_PASS = process.env.CIS565_PASSWORD;
 
 // Specify search term
 const searchTerm = 'nba';
-
 
 // Login function
 async function login(page: Page): Promise<void> {
