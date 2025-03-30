@@ -21,4 +21,8 @@ jobs:
           node-version: lts/*
           
       - name: Install Yarn Dependencies
-        run: yarn && yarn web
+        run: yarn install
+
+      - name: Build Yarn
+        run: yarn build
+        
