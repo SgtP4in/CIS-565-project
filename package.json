@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "1. Unit tests\r 2. Integration tests\r 3. System tests\r 4. Acceptance tests",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "web": "expo start --web"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
