@@ -1,0 +1,25 @@
+name: Build Bluesky Web Instance
+
+on:
+  push:
+    branches: [ test ]
+
+jobs:
+  build:
+    timeout-minutes: 15
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+  
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Build Web Project
+        run: yarn build-web
