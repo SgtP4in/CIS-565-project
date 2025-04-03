@@ -24,6 +24,7 @@
     "build": "yarn use-build-number-with-bump eas build",
     "build-embed": "cd bskyembed && yarn build && yarn build-snippet && cd .. && node ./scripts/post-embed-build.js",
     "start": "expo start --dev-client",
+    "start:dev": "webpack-dev-server --config webpack.config.js --env mode=development",
     "start:prod": "expo start --dev-client --no-dev --minify",
     "test": "NODE_ENV=test jest --forceExit --testTimeout=20000 --bail",
     "test-watch": "NODE_ENV=test jest --watchAll",
@@ -213,7 +214,6 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.50.1",
     "@atproto/dev-env": "^0.3.87",
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
