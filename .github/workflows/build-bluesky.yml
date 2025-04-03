@@ -19,9 +19,7 @@ jobs:
           node-version: '21'
   
       - name: Install Yarn Dependencies
-        run: |
-          yarn --frozen-lockfile --silent
-          yarn add -D webpack-cli
+        run: yarn
           
       - name: Build Web Version
         run: yarn build-web
