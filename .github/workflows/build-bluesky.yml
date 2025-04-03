@@ -20,7 +20,8 @@ jobs:
   
       - name: Install Yarn Dependencies
         run: |
-          yarn 
+          yarn cache clean
+          yarn install
           yarn add -D webpack-cli
           
       - name: Build Web Version
