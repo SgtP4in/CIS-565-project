@@ -1,28 +1,26 @@
-name: Sample Test Pipeline
+name: Build Bluesky Web
 
 on:
   push:
     branches: [ main ]
-    
-  workflow_dispatch:
 
 jobs:
-  setup-backend:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          
-      - name: Install Yarn Dependencies
-        run: yarn install
+  build:
+    timeout-minutes: 60
+    runs-on: ubuntu-22.04
 
-      - name: Build Yarn
-        run: yarn build
-        
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js Version 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+  
+      - name: Install Yarn Dependencies
+        run: |
+          yarn --frozen-lockfile --silent
+          
+      - name: Build Web Version
+        run: yarn web
