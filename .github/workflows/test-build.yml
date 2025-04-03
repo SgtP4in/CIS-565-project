@@ -19,8 +19,7 @@ jobs:
           node-version: '20'
   
       - name: Install Yarn Dependencies
-        run: |
-          yarn --frozen-lockfile --silent
+        run: yarn
           
       - name: Build Web Version
         run: yarn web
