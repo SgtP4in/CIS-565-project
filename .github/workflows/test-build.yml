@@ -10,7 +10,7 @@ on:
 jobs:
   # First Job: Build Workflow
   build:
-    name: Build BlueSky App
+    name: Build App
     # Will automatically cancel workflow after 1 hour of running
     timeout-minutes: 60
     # Run Workflow using Ubuntu-22.04 OS
@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bluesky-build-output # Artifact name
-          path: dist/ # Path to the directory created by 'yarn build-web'
+          path: web-build/ # Path to the directory created by 'yarn build-web'
           if-no-files-found: error # Fail step if path doesn't exist
 
 
