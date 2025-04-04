@@ -1,25 +1,112 @@
-name: Build Bluesky Web
+name: Build & Test Bluesky Social Using Playwright
 
+# Triggers
 on:
   push:
+    # Trigger CI/CD pipeline automation whenever new changes are 'push' to 'main' branch
     branches: [ main ]
 
+# Define Automated Jobs & Steps
 jobs:
+  # First Job: Build Workflow
   build:
+    name: Build BlueSky App
+    # Will automatically cancel workflow after 1 hour of running
     timeout-minutes: 60
+    # Run Workflow using Ubuntu-22.04 OS
     runs-on: ubuntu-22.04
 
+    # Step Definitions
     steps:
+        # Checkout the latest code from the main repo
       - name: Checkout Git Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install Node.js Version 20
-        uses: actions/setup-node@v3
+        # Setup Node.js required environment using v20
+      - name: Setup Node.js 
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-  
+          node-version: '20' # Use Node.js v20
+          cache: 'yarn' # Enable caching for Yarn dependencies
+
+        # Install Yarn package manager dependencies
       - name: Install Yarn Dependencies
         run: yarn
-          
-      - name: Build Web Version
-        run: yarn web
+
+        # Build Web Application
+      - name: Build BlueSky Web Application
+        run: yarn build-web
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bluesky-build-output # Artifact name
+          path: dist/ # Path to the directory created by 'yarn build-web'
+          if-no-files-found: error # Fail step if path doesn't exist
+
+
+  # Second Job: Test E2E Workflow
+  test-e2e-login:
+    name: Run Playwright E2E Login Tests
+    # Waits until first job is completed
+    needs: build
+    # Will automatically cancel workflow after 1 hour of running
+    timeout-minutes: 60
+    # Run Workflow using Ubuntu-22.04 OS
+    runs-on: ubuntu-22.04
+
+    # Steps definition
+    steps:
+      # Checkout the latest code from the main repo
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+
+        # Setup Node.js required environment using v20
+      - name: Setup Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use Node.js v20
+          cache: 'yarn' # Enable caching for Yarn dependencies
+
+        # Install NPM & Yarn dependencies
+      - name: Install NPM & Yarn Dependencies
+        run: |
+          npm ci
+          yarn --frozen-lockfile
+
+        # Download previously builts artifact
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: bluesky-build-output # Artifact name
+          path: ./downloaded-build # Path to the directory created by 'yarn build-web'
+
+      # Start statuc server for downloaded build
+      # Serve the contents of the downloaded artifect directory using SPA mode
+      - name: Serve Downloaded Artifact
+        run: |
+          npx serve -s ./dist -l 8080 &
+          echo "Server started in background"
+      
+        # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
+      - name: Install Playwright Browsers & Dependencies
+        run: npx playwright install --with-deps
+
+        # Wait for server to be ready
+      - name: Wait for server to start
+        run: |
+          npx wait-on http://localhost:8080 -t 60000 --http-status 200
+          echo "Server is up"
+ 
+        # Run the playwright login test scripts
+      - name: Run Playwright tests
+        run: xvfb-run npx playwright test --grep @login
+
+        # Upload the test scripts results if the job was not cancelled. Keep report for 30 days
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-login-report
+          path: playwright-report/
+          retention-days: 30
+
