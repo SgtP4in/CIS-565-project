@@ -1,12 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const BLUESKY_WEB_URL = "http://localhost:8100";
-const BSKY_EMAIL = process.env.CIS565_EMAIL; // reference secret in GitHub
-const BSKY_PASS = process.env.CIS565_PASSWORD; // reference secret in GitHub
+
+const BSKY_EMAIL = process.env.CIS565_EMAIL; 
+const BSKY_PASS = process.env.CIS565_PASSWORD;
 
 
 test.beforeEach(async ({ page }) => {
-    await page.goto(BLUESKY_WEB_URL);
+    await page.goto('/'); // Navigate to the root path relative to the baseURL. baseURL was defined in playwright.config.ts
     await page.getByRole('button', {name: 'Sign in'}).click(); // Click Sign in button
 });
 
