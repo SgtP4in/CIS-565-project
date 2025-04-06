@@ -4,7 +4,7 @@ name: Build & Test Bluesky Social Using Playwright
 on:
   push:
     # Trigger CI/CD pipeline automation whenever new changes are 'push' to 'main' branch
-    branches: [ main ]
+    branches: [ develop ]
 
 # Define Automated Jobs & Steps
 jobs:
