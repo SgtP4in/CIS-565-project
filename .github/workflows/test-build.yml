@@ -4,7 +4,7 @@ name: Build & Test Bluesky Social Using Playwright
 on:
   push:
     # Trigger CI/CD pipeline automation whenever new changes are 'push' to 'main' branch
-    branches: [ develop ]
+    branches: [ main ]
 
 # Define Automated Jobs & Steps
 jobs:
@@ -39,7 +39,7 @@ jobs:
 
         # Wait for server to be ready
       - name: Wait For Server to Start
-        run: npx wait-on http://localhost:19006 -t 60000 --http-status 200
+        run: npx wait-on http://localhost:8081 -t 60000 --http-status 200
 
 
   # Second Job: Test E2E Workflow
