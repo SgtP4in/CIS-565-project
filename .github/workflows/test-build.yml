@@ -40,7 +40,7 @@ jobs:
         # Wait for server to be ready
       - name: Wait For Server to Start
         run: |
-          yarn exec wait-on http://localhost:8081 -t 60000 --http-status 200
+          yarn run wait-on http://localhost:8081 -t 60000 --http-status 200
           echo "Server is up"
 
 
