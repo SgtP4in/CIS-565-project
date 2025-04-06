@@ -70,7 +70,7 @@ jobs:
         # Install yarn and npm package manager dependencies
       - name: Install Needed Dependencies
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           yarn
       
         # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
