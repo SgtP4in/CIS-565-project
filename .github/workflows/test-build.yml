@@ -69,6 +69,7 @@ jobs:
       - name: Install Needed Dependencies
         run: |
           yarn add expo
+          yarn add --dev allure-playwright
       
         # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
       - name: Install Playwright Browsers & Dependencies
