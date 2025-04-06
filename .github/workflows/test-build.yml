@@ -39,9 +39,7 @@ jobs:
 
         # Wait for server to be ready
       - name: Wait For Server to Start
-        run: |
-          yarn run wait-on http://localhost:8081 -t 60000 --http-status 200
-          echo "Server is up"
+        run: npx wait-on http://localhost:8081 -t 60000 --http-status 200
 
 
   # Second Job: Test E2E Workflow
