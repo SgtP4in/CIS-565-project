@@ -65,12 +65,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20' # Use Node.js v20
+          cache: 'npx'
 
         # Install npm package manager dependencies
       - name: Install Needed Dependencies
         run: |
-          npm install
-          npm add expo@latest # Ensures expo is latest, potentially updating again
+          npx expo install expo@latest
+          npx expo install --fix
       
         # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
       - name: Install Playwright Browsers & Dependencies
