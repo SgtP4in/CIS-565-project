@@ -33,16 +33,15 @@ jobs:
       - name: Install Yarn Dependencies
         run: yarn
 
-        # Build Web Application
-      - name: Build BlueSky Web Application
-        run: yarn build-web
+        # Start blueSky server local instance (in background)
+      - name: Start BlueSky Web Server In Background
+        run: yarn web &
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: bluesky-build-output # Artifact name
-          path: web-build/ # Path to the directory created by 'yarn build-web'
-          if-no-files-found: error # Fail step if path doesn't exist
+        # Wait for server to be ready
+      - name: Wait For Server to Start
+        run: |
+          npx wait-on http://localhost:19006 -t 60000 --http-status 200
+          echo "Server is up"
 
 
   # Second Job: Test E2E Workflow
@@ -73,30 +72,10 @@ jobs:
         run: |
           npm install
           yarn
-
-        # Download previously builts artifact
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: bluesky-build-output # Artifact name
-          path: ./downloaded-build # Path to download to
-          
-      # Start statuc server for downloaded build
-      # Serve the contents of the downloaded artifect directory using SPA mode
-      - name: Serve Downloaded Artifact
-        run: |
-          npx serve -s ./dist -l 8080 &
-          echo "Server started in background"
       
         # Install Playwright browsers (i.e. Chromium, Webkit, Firefox) with dependencies
       - name: Install Playwright Browsers & Dependencies
         run: npx playwright install --with-deps
-
-        # Wait for server to be ready
-      - name: Wait For Server to Start
-        run: |
-          npx wait-on http://localhost:8080 -t 60000 --http-status 200
-          echo "Server is up"
  
         # Run the playwright login test scripts
       - name: Run Playwright Tests
